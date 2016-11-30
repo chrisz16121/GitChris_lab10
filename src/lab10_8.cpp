@@ -160,19 +160,20 @@ void morseMessage::toLED()
 		PBDR = BasePtr + 1;		// Address of port B DR is 0x80840004
 	    PBDDR = BasePtr + 5;	// Address of port B DDR is 0x80840014
 
-	    *PBDDR |= 0x80;			// configures port B7 as output (Green LED)
+	    *PBDDR &= 0x00;
+	    *PBDDR |= 0xE0;		// configures port B7 as output (Green LED)
 		*PBDDR &= 0xFFFFFFFE;	// configures port B0 as input (first push button). You could use: &= ~0x01
-		/*
+
 		// The program will turn on the green LED, sleep for a while, then off, sleep, then on again, then off.
 		// You could use loops, if you wanted/needed.
-	    *PBDR |= 0x80;	// ON: write a 1 to port B0. Mask all other bits.
-		sleep(1);	// How can you sleep for less than a second?
-	    *PBDR &= ~0x80;	// OFF: write a 0 to port B0. Mask all other bits.
-	    sleep(1);
-	    *PBDR |= 0x80;
-		sleep(2);
-	    *PBDR &= ~0x80;
-		*/
+	    //*PBDR |= 0x80;	// ON: write a 1 to port B0. Mask all other bits.
+		//sleep(1);	// How can you sleep for less than a second?
+	    //*PBDR &= ~0x80;	// OFF: write a 0 to port B0. Mask all other bits.
+	    //sleep(1);
+	    //*PBDR |= 0x80;
+		//sleep(2);
+	    //*PBDR &= ~0x80;
+
 		// If you wanted to read the status of Port B0, how could you do it?
 
 	   	// close the special file
@@ -182,11 +183,13 @@ void morseMessage::toLED()
 		cout << "TESTING 123" << endl;
 		*PBDR &= 0x00;
 		sleep(3);
+
 		while(z < stringSize)
 		{
 				string temp = *morseMsg;
 				cout << "TEST:" << temp << endl;
 				int y = temp.length();
+
 				int i = 0;
 
 				while(i < y){
@@ -194,27 +197,30 @@ void morseMessage::toLED()
 					if(c == '.'){
 						cout << "RED" << endl;
 						*PBDR |= 0x20;
-						sleep(1);
-						*PBDR &= ~0x20;
+						usleep(500000);
+						*PBDR &= 0x00;
+						usleep(500000);
 					}
 					else if(c == '-'){
 						cout << "YELLOW" << endl;
 						*PBDR |= 0x40;
-						sleep(1);
-						*PBDR &= ~0x40;
-					}
-					else{
-						cout << "GREEN" << endl;
-						*PBDR |= 0x80;
-						sleep(1);
-						*PBDR &= ~0x80;
+						usleep(500000);
+						*PBDR &= 0x00;
+						usleep(500000);
 					}
 					i++;
-					}
-				//cout << y << endl;
+					//*PBDR &= 0x1F;
+				}
+
+				cout << y << endl;
 				z++;
 				morseMsg++;
 		}
+		cout << "GREEN" << endl;
+		*PBDR |= 0x80;
+		usleep(500000);
+		*PBDR &= 0x00;
+		usleep(500000);
 		morseMsg = startPtr;
 		close(fd);
 }
